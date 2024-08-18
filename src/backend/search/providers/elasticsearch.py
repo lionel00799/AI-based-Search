@@ -45,7 +45,7 @@ class ElasticsearchSearchProvider(SearchProvider):
         )
 
         hits = response['hits']['hits']
-        results = [SearchResult(title="ABC", url=hit['_source']['metadata']['path'], content=hit['_source']['content'][:500]) for hit in hits]
+        results = [SearchResult(title=hit['_source']['metadata']['filename'], url=hit['_source']['metadata']['path'], content=hit['_source']['content'][:500]) for hit in hits]
         
         image_results = []
         hits_image = response_image['hits']['hits']

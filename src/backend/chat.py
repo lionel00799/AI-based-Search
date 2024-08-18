@@ -101,13 +101,11 @@ async def stream_qa_objects(
                 data=TextChunkStream(text=completion.delta or ""),
             )
 
-        # related_queries = await (
-        #     related_queries_task
-        #     if related_queries_task
-        #     else generate_related_queries(query, search_results, llm)
-        # )
-        
-        related_queries = ['What are the benefits of Mobile DevOps?', 'How does DevOps for Windows differ from other platforms?', 'Can you explain the process of automated testing in Mobile DevOps?']
+        related_queries = await (
+            related_queries_task
+            if related_queries_task
+            else generate_related_queries(query, search_results, llm)
+        )
 
         yield ChatResponseEvent(
             event=StreamEvent.RELATED_QUERIES,

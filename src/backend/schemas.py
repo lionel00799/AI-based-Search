@@ -40,7 +40,7 @@ class ChatRequest(BaseModel, plugin_settings=record_all):
 
 
 class RelatedQueries(BaseModel):
-    related_questions: List[str] = Field(..., min_length=3, max_length=3)
+    related_questions: str
 
 
 class SearchResult(BaseModel):

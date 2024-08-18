@@ -39,7 +39,7 @@ Original Question: {query}
 </context>
 
 Output:
-related_questions: Only a python list type of EXACTLY three concise, simple follow-up questions without any description.
+related_questions: Only a python list type of EXACTLY three concise, simple follow-up questions without any description. Each question must be surrounded by backquote like this "..." and must have a question mark at the end.
 """
 
 HISTORY_QUERY_REPHRASE = """

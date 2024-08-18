@@ -1,5 +1,5 @@
 import os
-import logging
+import re
 from abc import ABC, abstractmethod
 
 import instructor
@@ -51,7 +51,6 @@ class EveryLLM(BaseLLM):
         return self.llm.complete(prompt)
 
     def structured_complete(self, response_model: type[T], prompt: str) -> T:
-        print(prompt)
         return self.client.chat.completions.create(
             model=self.llm.model,
             response_model=response_model,
