@@ -1,5 +1,5 @@
 CHAT_PROMPT = """\
-Generate a comprehensive and informative answer for a given question solely based on the provided web Search Results (URL, Page Title, Summary). You must only use information from the provided search results. Use an unbiased and journalistic tone.
+Generate a comprehensive and informative answer for a given question solely based on the provided Search Results (URL, Page Title, Summary). You must only use information from the provided search results. Use an unbiased and journalistic tone.
 
 You must cite the answer using [number] notation. You must cite sentences with their relevant citation number. Cite every part of the answer.
 Place citations at the end of the sentence. You can do multiple citations in a row with the format [number1][number2].
@@ -22,6 +22,24 @@ Make sure to match the language of the user's question.
 
 Question: {my_query}
 Answer (in the language of the user's question): \
+"""
+
+SEARCH_RESULT_FILTER_PROMPT = """\
+Given a original question and search result context, provide a title of the group that is relevant to the original question.
+
+Instructions:
+- The context consists of the title, url, and summary parts.
+- The title, url, and summary are one group.
+- Read all the groups and select only the most relevant groups that can most accurately answer the question.
+- Print only the title of the selected groups.
+
+Original Question: {query}
+<context>
+{context}
+</context>
+
+Output:
+related_contents: Only a python list type of titles of selected groups without any descriptions. Each title must be surrounded by backquote like this "..." and include extension.
 """
 
 RELATED_QUESTION_PROMPT = """\

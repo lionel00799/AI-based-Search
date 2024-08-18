@@ -41,7 +41,9 @@ class ChatRequest(BaseModel, plugin_settings=record_all):
 
 class RelatedQueries(BaseModel):
     related_questions: str
-
+    
+class RelatedContents(BaseModel):
+    related_contents: str
 
 class SearchResult(BaseModel):
     title: str

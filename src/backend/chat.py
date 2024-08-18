@@ -8,7 +8,7 @@ from constants import get_model_string
 from db.chat import save_turn_to_db
 from llm.base import BaseLLM, EveryLLM
 from prompts import CHAT_PROMPT, HISTORY_QUERY_REPHRASE
-from related_queries import generate_related_queries
+from related_queries import generate_related_queries, filter_related_contents
 from schemas import (
     BeginStream,
     ChatRequest,
@@ -69,6 +69,13 @@ async def stream_qa_objects(
 
         search_results = search_response.results
         images = search_response.images
+        
+        search_results = await (
+            filter_related_contents(query, search_results, llm)
+        )
+        
+        print('-----------------------')
+        print(search_results)
 
         # Only create the task first if the model is not local
         related_queries_task = None
