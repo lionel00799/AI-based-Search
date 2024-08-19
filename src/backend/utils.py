@@ -42,7 +42,6 @@ def results_filter(searchResults: list[str], relatedContents: list[str]) -> list
     # Filter the original list
     filtered_list = [item for item in searchResults if item.title in relatedContents]
     return filtered_list
-    
 
 DB_ENABLED = strtobool(os.environ.get("DB_ENABLED", "true"))
 PRO_MODE_ENABLED = strtobool(os.environ.get("PRO_MODE_ENABLED", "true"))

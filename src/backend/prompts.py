@@ -106,7 +106,7 @@ Example Query Plan:
     {{
         "id": 1,
         "step": "Research You.com's revenue, employee count, and valuation",
-        "dependencies": []
+        "dependencies": [0]
     }},
     {{
         "id": 2,
@@ -116,7 +116,7 @@ Example Query Plan:
 ]
 
 Query: {query}
-Query Plan (with a final summarize/combine/compare step):
+Query Plan:
 """
 
 SEARCH_QUERY_PROMPT = """\

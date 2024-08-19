@@ -34,22 +34,11 @@ from schemas import (
 )
 from search.search_service import perform_search
 from utils import PRO_MODE_ENABLED, is_local_model
+from query_plan import convert_to_query_plan, QueryPlanStr
 
 
-class QueryPlanStep(BaseModel):
-    id: int = Field(..., description="Unique id of the step")
-    step: str
-    dependencies: list[int] = Field(
-        ...,
-        description="List of step ids that this step depends on information from",
-        default_factory=list,
-    )
-
-
-class QueryPlan(BaseModel):
-    steps: list[QueryPlanStep] = Field(
-        ..., description="The steps to complete the query", max_length=4
-    )
+# class QueryPlanStr(BaseModel):
+#     steps: str
 
 
 class QueryStepExecution(BaseModel):
@@ -59,6 +48,7 @@ class QueryStepExecution(BaseModel):
         min_length=1,
         max_length=3,
     )
+    # search_queries: str
 
 
 class StepContext(BaseModel):
@@ -112,10 +102,13 @@ async def stream_pro_search_objects(
     request: ChatRequest, llm: BaseLLM, query: str, session: Session
 ) -> AsyncIterator[ChatResponseEvent]:
     query_plan_prompt = QUERY_PLAN_PROMPT.format(query=query)
-    query_plan = llm.structured_complete(
-        response_model=QueryPlan, prompt=query_plan_prompt
+    query_plan_str = llm.structured_complete(
+        response_model=QueryPlanStr, prompt=query_plan_prompt
     )
-    print(query_plan)
+    print("--------*------------*-----------*------------*--------------*----------")
+    print(query_plan_str)
+    
+    query_plan = convert_to_query_plan(query_plan_str)
 
     yield ChatResponseEvent(
         event=StreamEvent.AGENT_QUERY_PLAN,
