@@ -34,21 +34,7 @@ from schemas import (
 )
 from search.search_service import perform_search
 from utils import PRO_MODE_ENABLED, is_local_model
-from query_plan import convert_to_query_plan, QueryPlanStr
-
-
-# class QueryPlanStr(BaseModel):
-#     steps: str
-
-
-class QueryStepExecution(BaseModel):
-    search_queries: list[str] | None = Field(
-        ...,
-        description="The search queries to complete the step",
-        min_length=1,
-        max_length=3,
-    )
-    # search_queries: str
+from query_plan import convert_to_query_plan, convert_to_query_step_execution
 
 
 class StepContext(BaseModel):
@@ -102,13 +88,14 @@ async def stream_pro_search_objects(
     request: ChatRequest, llm: BaseLLM, query: str, session: Session
 ) -> AsyncIterator[ChatResponseEvent]:
     query_plan_prompt = QUERY_PLAN_PROMPT.format(query=query)
-    query_plan_str = llm.structured_complete(
-        response_model=QueryPlanStr, prompt=query_plan_prompt
-    )
-    print("--------*------------*-----------*------------*--------------*----------")
-    print(query_plan_str)
+
+    full_response = ""
+    response_gen = await llm.astream(query_plan_prompt)
+
+    async for completion in response_gen:
+        full_response += completion.delta or ""
     
-    query_plan = convert_to_query_plan(query_plan_str)
+    query_plan = convert_to_query_plan(full_response)
 
     yield ChatResponseEvent(
         event=StreamEvent.AGENT_QUERY_PLAN,
@@ -119,10 +106,13 @@ async def stream_pro_search_objects(
     search_result_map: dict[int, list[SearchResult]] = {}
     image_map: dict[int, list[str]] = {}
     agent_search_steps: list[AgentSearchStep] = []
+    
+    step_count = 0
 
     for idx, step in enumerate(query_plan.steps):
+        step_count += 1
         step_id = step.id
-        is_last_step = idx == len(query_plan.steps) - 1
+        is_last_step = idx == len(query_plan.steps)
         dependencies = step.dependencies
 
         relevant_context = [step_context[id] for id in dependencies]
@@ -133,9 +123,15 @@ async def stream_pro_search_objects(
                 current_step=step.step,
                 prev_steps_context=format_step_context(relevant_context),
             )
-            query_step_execution = llm.structured_complete(
-                response_model=QueryStepExecution, prompt=search_prompt
-            )
+            
+            full_response = ""
+            response_gen = await llm.astream(search_prompt)
+
+            async for completion in response_gen:
+                full_response += completion.delta or ""
+                
+            query_step_execution = convert_to_query_step_execution(full_response)
+            
             search_queries = query_step_execution.search_queries
             if not search_queries:
                 raise HTTPException(
@@ -175,7 +171,7 @@ async def stream_pro_search_objects(
                     status=AgentSearchStepStatus.DONE,
                 )
             )
-        else:
+        if step_count == 4:
             yield ChatResponseEvent(
                 event=StreamEvent.AGENT_FINISH,
                 data=AgentFinishStream(),

@@ -57,7 +57,7 @@ Original Question: {query}
 </context>
 
 Output:
-related_questions: Only a python list type of EXACTLY three concise, simple follow-up questions without any description. Each question must be surrounded by backquote like this "..." and must have a question mark at the end.
+related_questions: Output as a string in python list format of EXACTLY three concise, simple follow-up questions without any description. Each question must be surrounded by backquote like this "..." and must have a question mark at the end.
 """
 
 HISTORY_QUERY_REPHRASE = """
@@ -93,6 +93,8 @@ Instructions for creating the Query Plan:
 4. The first step should always have an empty dependencies array.
 5. Subsequent steps should list all step ids they depend on.
 
+NOTE: Do not add any description to the output.
+
 Example Query:
 Given the query "Compare Perplexity and You.com in terms of revenue, number of employees, and valuation"
 
@@ -125,11 +127,13 @@ Generate a concise list of search queries to gather information for executing th
 You will be provided with:
 1. A specific step to execute
 2. The user's original query
-3. Context from previous steps (if available)
+3. Context from previous steps
 
 Use this information to create targeted search queries that will help complete the current step effectively. Aim for the minimum number of queries necessary while ensuring they cover all aspects of the step.
 
-IMPORTANT: Always incorporate relevant information from previous steps into your queries. This ensures continuity and builds upon already gathered information.
+IMPORTANT: Always incorporate relevant information from previous steps into your queries. This ensures continuity and builds upon already gathered information. Only queries that are strictly related to the user's original query should be generated.
+
+NOTE: Do not add any description to the output and just only print three questions.
 
 Input:
 ---

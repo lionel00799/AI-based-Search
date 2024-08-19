@@ -1,6 +1,6 @@
+import json
 from pydantic import BaseModel, Field
 from typing import List
-import json
 
 # Define the QueryPlanStep and QueryPlan classes
 class QueryPlanStep(BaseModel):
@@ -16,13 +16,18 @@ class QueryPlan(BaseModel):
     steps: List[QueryPlanStep] = Field(
         ..., description="The steps to complete the query", max_length=4
     )
+    
+class QueryStepExecution(BaseModel):
+    search_queries: List[str] | None = Field(
+        ...,
+        description="The search queries to complete the step",
+        min_length=1,
+        max_length=3,
+    )
 
-class QueryPlanStr(BaseModel):
-    steps: str
-
-def convert_to_query_plan(query_plan_str: QueryPlanStr) -> QueryPlan:
-    # Parse the JSON string from the QueryPlanStr instance
-    steps_data = json.loads(query_plan_str.steps)
+def convert_to_query_plan(json_string: str) -> QueryPlan:
+    # Parse the JSON string
+    steps_data = json.loads(json_string)
 
     # Convert dependencies that are empty strings to empty lists
     for step in steps_data:
@@ -33,3 +38,23 @@ def convert_to_query_plan(query_plan_str: QueryPlanStr) -> QueryPlan:
 
     # Create and return QueryPlan instance
     return QueryPlan(steps=steps)
+
+def convert_to_query_step_execution(query_string: str) -> QueryStepExecution:
+    # Split the string by line breaks or other delimiter
+    queries = [query.strip() for query in query_string.split('\n') if query.strip()]
+    
+    # Truncate the list to meet the max_length requirement of 3 items
+    if len(queries) > 3:
+        queries = queries[:3]
+    
+    # Create the QueryStepExecution object
+    query_step_execution = QueryStepExecution(search_queries=queries)
+    
+    return query_step_execution
+
+def convert_to_related_queries(query_string: str) -> List[str]:
+
+    # Convert JSON string to Python list
+    related_queries = json.loads(query_string)
+    
+    return related_queries

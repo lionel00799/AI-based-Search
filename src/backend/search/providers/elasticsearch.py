@@ -5,7 +5,8 @@ from schemas import SearchResponse, SearchResult
 
 class ElasticsearchSearchProvider(SearchProvider):
     def __init__(self, es_host: str, ssl_assert_fingerprint: str, username: str, passwd: str, index_name_doc: str, index_name_image: str):
-        self.es = Elasticsearch(hosts=es_host, ssl_assert_fingerprint=ssl_assert_fingerprint, basic_auth=(username, passwd))
+        
+        self.es = Elasticsearch(es_host, ssl_assert_fingerprint=ssl_assert_fingerprint, basic_auth=(username, passwd))
         self.index_name_doc = index_name_doc
         self.index_name_image = index_name_image
 
@@ -27,7 +28,7 @@ class ElasticsearchSearchProvider(SearchProvider):
                     "k": 10,
                     "num_candidates": 50,
                 },
-                "size": 10,  # Number of results to return
+                "size": 5,  # Number of results to return
             }
         )
 
