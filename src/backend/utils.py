@@ -38,10 +38,6 @@ def results_filter(searchResults: list[str], relatedContents: list[str]) -> list
     
     # Convert title list to a set for faster lookup
     # title_set = set(relatedContents)
-    print('-----------------------------')
-    print(searchResults)
-    print('---------------')
-    print(relatedContents)
 
     # Filter the original list
     filtered_list = [item for item in searchResults if item.title in relatedContents]

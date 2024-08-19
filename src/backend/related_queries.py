@@ -21,12 +21,9 @@ async def filter_related_contents(
     context = "\n\n".join([f"{str(result)}" for result in search_results])
     context = context[:4000]
     
-    print(SEARCH_RESULT_FILTER_PROMPT.format(query=query, context=context))
     related = llm.structured_complete(
         RelatedContents, SEARCH_RESULT_FILTER_PROMPT.format(query=query, context=context)
     )
-    
-    print(related.related_contents)
     
     related_contents = list_parser(related.related_contents)
     

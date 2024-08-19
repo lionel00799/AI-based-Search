@@ -27,7 +27,7 @@ class ElasticsearchSearchProvider(SearchProvider):
                     "k": 10,
                     "num_candidates": 50,
                 },
-                "size": 5,  # Number of results to return
+                "size": 10,  # Number of results to return
             }
         )
 
@@ -45,10 +45,10 @@ class ElasticsearchSearchProvider(SearchProvider):
         )
 
         hits = response['hits']['hits']
-        results = [SearchResult(title=hit['_source']['metadata']['filename'], url=hit['_source']['metadata']['path'], content=hit['_source']['content'][:500]) for hit in hits]
+        results = [SearchResult(title=hit['_source']['metadata']['filename'], url=hit['_source']['metadata']['url'], content=hit['_source']['content'][:500]) for hit in hits]
         
         image_results = []
         hits_image = response_image['hits']['hits']
         for hit in hits_image:
-            image_results.append(hit['_source']['metadata']['path'])
+            image_results.append(hit['_source']['metadata']['url'])
         return SearchResponse(results=results, images=image_results)

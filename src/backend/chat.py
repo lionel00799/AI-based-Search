@@ -70,12 +70,9 @@ async def stream_qa_objects(
         search_results = search_response.results
         images = search_response.images
         
-        search_results = await (
-            filter_related_contents(query, search_results, llm)
-        )
-        
-        print('-----------------------')
-        print(search_results)
+        # search_results = await (
+        #     filter_related_contents(query, search_results, llm)
+        # )
 
         # Only create the task first if the model is not local
         related_queries_task = None
