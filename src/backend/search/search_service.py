@@ -12,9 +12,6 @@ from search.providers.elasticsearch import ElasticsearchSearchProvider
 load_dotenv()
 
 
-redis_url = os.getenv("REDIS_URL")
-redis_client = redis.Redis.from_url(redis_url) if redis_url else None
-
 def get_elasticsearch_config():
     es_host = os.getenv("ELASTICSEARCH_HOST")
     ssl_assert_fingerprint = os.getenv("ELASTICSEARCH_SSL_FINGERPRINT")
@@ -43,15 +40,7 @@ async def perform_search(query: str) -> SearchResponse:
     search_provider = get_search_provider()
 
     try:
-        cache_key = f"search:{query}"
-        if redis_client and (cached_results := redis_client.get(cache_key)):
-            cached_json = json.loads(json.loads(cached_results.decode("utf-8")))  # type: ignore
-            return SearchResponse(**cached_json)
-
         results = search_provider.search(query)
-
-        if redis_client:
-            redis_client.set(cache_key, json.dumps(results.model_dump_json()), ex=7200)
 
         return results
     except Exception:

@@ -23,7 +23,6 @@ from schemas import (
     TextChunkStream,
 )
 from search.search_service import perform_search
-from utils import is_local_model
 
 
 def rephrase_query_with_history(
@@ -74,13 +73,6 @@ async def stream_qa_objects(
         #     filter_related_contents(query, search_results, llm)
         # )
 
-        # Only create the task first if the model is not local
-        related_queries_task = None
-        if not is_local_model(request.model):
-            related_queries_task = asyncio.create_task(
-                generate_related_queries(query, search_results, llm)
-            )
-
         yield ChatResponseEvent(
             event=StreamEvent.SEARCH_RESULTS,
             data=SearchResultStream(
@@ -106,9 +98,7 @@ async def stream_qa_objects(
             )
 
         related_queries = await (
-            related_queries_task
-            if related_queries_task
-            else generate_related_queries(query, search_results, llm)
+            generate_related_queries(query, search_results, llm)
         )
 
         yield ChatResponseEvent(

@@ -195,7 +195,7 @@ async def stream_pro_search_objects(
             )
         
             for id in dependencies:
-                relevant_result_map[id] = search_result_map[id][:12]
+                relevant_result_map[id] = search_result_map[id][:DESIRED_RESULT_COUNT]
 
             search_results = [
                 result for results in relevant_result_map.values() for result in results
@@ -205,13 +205,7 @@ async def stream_pro_search_objects(
             # search_results = list(
             #     {result.url: result for result in search_results}.values()
             # )
-            images = [image for id in dependencies for image in image_map[id][:2]]
-
-            related_queries_task = None
-            if not is_local_model(request.model):
-                related_queries_task = asyncio.create_task(
-                    generate_related_queries(query, search_results, llm)
-                )
+            images = [image for id in dependencies for image in image_map[id][:5]]
 
             yield ChatResponseEvent(
                 event=StreamEvent.SEARCH_RESULTS,
@@ -236,9 +230,7 @@ async def stream_pro_search_objects(
                 )
 
             related_queries = await (
-                related_queries_task
-                if related_queries_task
-                else generate_related_queries(query, search_results, llm)
+                generate_related_queries(query, search_results, llm)
             )
 
             yield ChatResponseEvent(
@@ -280,7 +272,7 @@ async def stream_pro_search_qa(
         if not PRO_MODE_ENABLED:
             raise HTTPException(
                 status_code=400,
-                detail="Pro mode is not enabled, self-host to enable it at https://github.com/rashadphz/farfalle",
+                detail="Pro mode is not enabled",
             )
 
         modelName = get_model_string(request.model)

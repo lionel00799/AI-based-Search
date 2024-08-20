@@ -59,7 +59,7 @@ export const modelMap: Record<ChatModel, Model> = {
     icon: <LightningBoltIcon className="w-5 h-5 text-yellow-500" />,
   },
   [ChatModel.LLAMA3]: {
-    name: "llama3.1:8b-instruct-q4_0",
+    name: "Llama",
     description: "ollama/llama3.1:8b-instruct-q4_0",
     value: ChatModel.LLAMA3,
     smallIcon: <WandSparklesIcon className="w-4 h-4 text-purple-500" />,
@@ -100,10 +100,10 @@ const localModelMap: Partial<Record<ChatModel, Model>> = _.pickBy(
   (_, key) => isLocalModel(key as ChatModel),
 );
 
-const cloudModelMap: Partial<Record<ChatModel, Model>> = _.pickBy(
-  modelMap,
-  (_, key) => isCloudModel(key as ChatModel),
-);
+// const cloudModelMap: Partial<Record<ChatModel, Model>> = _.pickBy(
+//   modelMap,
+//   (_, key) => isCloudModel(key as ChatModel),
+// );
 
 const ModelItem: React.FC<{ model: Model }> = ({ model }) => (
   <SelectItem
@@ -123,7 +123,7 @@ const ModelItem: React.FC<{ model: Model }> = ({ model }) => (
 
 export function ModelSelection() {
   const { localMode, model, setModel, toggleLocalMode } = useConfigStore();
-  const selectedModel = modelMap[model] ?? modelMap[ChatModel.GPT_3_5_TURBO];
+  const selectedModel = modelMap[model] ?? modelMap[ChatModel.LLAMA3];
 
   return (
     <Select
@@ -155,7 +155,7 @@ export function ModelSelection() {
             }
           }}
         >
-          <TabsList className="w-full">
+          {/* <TabsList className="w-full">
             <TabsTrigger value="cloud" className="flex-1">
               Cloud
             </TabsTrigger>
@@ -166,14 +166,14 @@ export function ModelSelection() {
             >
               Local
             </TabsTrigger>
-          </TabsList>
-          <TabsContent value="cloud" className="w-full">
+          </TabsList> */}
+          {/* <TabsContent value="cloud" className="w-full">
             <SelectGroup className="w-full">
               {Object.values(cloudModelMap).map((model) => (
                 <ModelItem key={model.value} model={model} />
               ))}
             </SelectGroup>
-          </TabsContent>
+          </TabsContent> */}
           <TabsContent value="local" className="w-full">
             <SelectGroup className="w-full">
               {Object.values(localModelMap).map((model) => (

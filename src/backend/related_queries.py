@@ -15,7 +15,7 @@ async def generate_related_queries(
     
     full_response = ""
     response_gen = await llm.astream(related_question_prompt)
-
+    
     async for completion in response_gen:
         full_response += completion.delta or ""
     
