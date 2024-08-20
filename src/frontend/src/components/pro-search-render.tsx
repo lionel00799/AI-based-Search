@@ -160,7 +160,7 @@ export const ProSearchRender = ({
                   <AccordionItem
                     value={index.toString()}
                     className={cn(isLast ? "border-b-0" : "")}
-                    disabled={status !== AgentSearchStepStatus.DONE || isLast}
+                    disabled={status !== AgentSearchStepStatus.DONE}
                   >
                     <AccordionTrigger className="w-full text-left hover:no-underline hover:bg-card/80 rounded-md px-2 py-2 my-1 text-primary">
                       {step}

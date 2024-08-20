@@ -9,7 +9,7 @@ Only cite the most relevant results that answer the question accurately. If diff
 ONLY cite inline.
 DO NOT include a reference section, DO NOT include URLs.
 DO NOT repeat the question.
-
+DO NOT answer with the knowledge you have.
 
 You can use markdown formatting. You should include bullets to list the information in your answer.
 
@@ -57,7 +57,7 @@ Original Question: {query}
 </context>
 
 Output:
-related_questions: Output as a string in python list format of EXACTLY three concise, simple follow-up questions without any description. Each question must be surrounded by backquote like this "..." and must have a question mark at the end.
+related_questions: Output as a json style string in python list format of EXACTLY three concise, simple follow-up questions without any description. Each question must be surrounded by backquote like this "..." and must have a question mark at the end.
 """
 
 HISTORY_QUERY_REPHRASE = """
@@ -81,7 +81,7 @@ QUERY_PLAN_PROMPT = """\
 You are an expert at creating search task lists to answer queries. Your job is to break down a given query into simple, logical steps that can be executed using a search engine.
 
 Rules:
-1. Use up to 4 steps maximum, but use fewer if possible.
+1. Use up to 3 steps.
 2. Keep steps simple, concise, and easy to understand.
 3. Ensure proper use of dependencies between steps.
 4. Always include a final step to summarize/combine/compare information from previous steps.

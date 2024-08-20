@@ -1,10 +1,10 @@
 import { ArrowUpRight } from "lucide-react";
 
 const starterQuestions = [
-  "what is farfalle?",
-  "openai scarlett johansson?",
-  "what is groq?",
-  "what happened to ilya?",
+  "what is DevOps?",
+  "what is AI trend?",
+  "what is machine learning?",
+  "what is object detection?",
 ];
 
 export const StarterQuestionsList = ({

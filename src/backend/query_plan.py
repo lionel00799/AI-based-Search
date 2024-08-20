@@ -1,3 +1,4 @@
+import re
 import json
 from pydantic import BaseModel, Field
 from typing import List
@@ -41,7 +42,11 @@ def convert_to_query_plan(json_string: str) -> QueryPlan:
 
 def convert_to_query_step_execution(query_string: str) -> QueryStepExecution:
     # Split the string by line breaks or other delimiter
-    queries = [query.strip() for query in query_string.split('\n') if query.strip()]
+    queries = [
+        query.strip() 
+        for query in query_string.split('\n') 
+        if query.strip() and re.match(r'^[1-3]\.\s', query.strip())
+    ]
     
     # Truncate the list to meet the max_length requirement of 3 items
     if len(queries) > 3:
@@ -54,6 +59,13 @@ def convert_to_query_step_execution(query_string: str) -> QueryStepExecution:
 
 def convert_to_related_queries(query_string: str) -> List[str]:
 
+    # Find the start and end of the list portion
+    start_index = query_string.find('[')
+    end_index = query_string.rfind(']') + 1
+
+    # Extract the list portion from the input string
+    query_string = query_string[start_index:end_index]
+       
     # Convert JSON string to Python list
     related_queries = json.loads(query_string)
     

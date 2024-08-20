@@ -106,11 +106,9 @@ async def stream_pro_search_objects(
     search_result_map: dict[int, list[SearchResult]] = {}
     image_map: dict[int, list[str]] = {}
     agent_search_steps: list[AgentSearchStep] = []
-    
-    step_count = 0
 
+    step_count = 0
     for idx, step in enumerate(query_plan.steps):
-        step_count += 1
         step_id = step.id
         is_last_step = idx == len(query_plan.steps)
         dependencies = step.dependencies
@@ -171,7 +169,8 @@ async def stream_pro_search_objects(
                     status=AgentSearchStepStatus.DONE,
                 )
             )
-        if step_count == 4:
+            step_count += 1
+        if step_count == len(query_plan.steps):
             yield ChatResponseEvent(
                 event=StreamEvent.AGENT_FINISH,
                 data=AgentFinishStream(),
@@ -194,17 +193,18 @@ async def stream_pro_search_objects(
                 DESIRED_RESULT_COUNT // len(dependencies),
                 total_results // len(dependencies),
             )
+        
             for id in dependencies:
-                relevant_result_map[id] = search_result_map[id][:results_per_dependency]
+                relevant_result_map[id] = search_result_map[id][:12]
 
             search_results = [
                 result for results in relevant_result_map.values() for result in results
             ]
 
-            # Remove duplicates
-            search_results = list(
-                {result.url: result for result in search_results}.values()
-            )
+            # # Remove duplicates
+            # search_results = list(
+            #     {result.url: result for result in search_results}.values()
+            # )
             images = [image for id in dependencies for image in image_map[id][:2]]
 
             related_queries_task = None
@@ -249,16 +249,6 @@ async def stream_pro_search_objects(
             yield ChatResponseEvent(
                 event=StreamEvent.FINAL_RESPONSE,
                 data=FinalResponseStream(message=full_response),
-            )
-
-            agent_search_steps.append(
-                AgentSearchStep(
-                    step_number=step_id,
-                    step=step.step,
-                    queries=[],
-                    results=[],
-                    status=AgentSearchStepStatus.DONE,
-                )
             )
 
             thread_id = save_turn_to_db(
